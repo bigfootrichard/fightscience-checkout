@@ -106,19 +106,6 @@ export const flashSaleProducts: FlashSaleProduct[] = [
     isFeatured: true,
   },
   {
-    ontraportProductId: '475',
-    name: 'Arm Drag Formula',
-    instructor: 'Jon Trenge — 3x NCAA All-American',
-    discipline: 'wrestling',
-    videoCount: 11,
-    description: 'The arm drag is the single highest-percentage takedown setup in grappling. Learn it from every position.',
-    fullPrice: 37,
-    salePrice: 17,
-    image: '/images/courses/complete-wrestling-hero.jpg',
-    isBundle: false,
-    isFeatured: false,
-  },
-  {
     ontraportProductId: '476',
     name: 'Breaking Guard',
     instructor: 'Robson Robinho',
@@ -280,7 +267,7 @@ export const flashSaleProducts: FlashSaleProduct[] = [
   },
   {
     ontraportProductId: '495',
-    name: 'Takedowns & Doubles',
+    name: 'Wrestling Takedowns: Singles & Doubles',
     instructor: 'Jon Trenge — 3x NCAA All-American',
     discipline: 'wrestling',
     videoCount: 26,
@@ -319,7 +306,7 @@ export const flashSaleProducts: FlashSaleProduct[] = [
   },
   {
     ontraportProductId: '498',
-    name: 'Arm Drag & Throws',
+    name: 'Wrestling Takedowns: Drags, Ducks, Trips & Sweeps',
     instructor: 'Jon Trenge — 3x NCAA All-American',
     discipline: 'wrestling',
     videoCount: 7,
