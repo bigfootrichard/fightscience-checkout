@@ -114,7 +114,7 @@ export const flashSaleProducts: FlashSaleProduct[] = [
     description: 'The arm drag from every position — closed guard, open guard, butterfly. Back takes, sweeps, omo platas, and reversals from the highest-percentage grip in grappling.',
     fullPrice: 37,
     salePrice: 17,
-    image: '/images/courses/bjj-101-system-hero.jpg',
+    image: '/images/courses/arm-drags-101.jpg',
     isBundle: false,
     isFeatured: false,
   },
