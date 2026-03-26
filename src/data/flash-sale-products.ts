@@ -270,7 +270,7 @@ export const flashSaleProducts: FlashSaleProduct[] = [
     name: 'Wrestling Takedowns: Singles & Doubles',
     instructor: 'Jon Trenge — 3x NCAA All-American',
     discipline: 'wrestling',
-    videoCount: 26,
+    videoCount: 17,
     description: 'Master the double leg and single leg — setups, finishes, chain wrestling, and how to score takedowns against anyone.',
     fullPrice: 97,
     salePrice: 37,
