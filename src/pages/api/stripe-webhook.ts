@@ -61,13 +61,26 @@ async function grantCourseAccess(email: string, firstName: string, lastName: str
   return res.ok;
 }
 
+const FLASH_SALE_PRICES: Record<string, number> = {
+  '468': 27, '469': 27, '470': 27, '471': 19, '472': 37, '473': 27,
+  '474': 47, '475': 17, '476': 27, '477': 47, '478': 37, '479': 27,
+  '480': 47, '460': 99, '461': 197, '485': 37, '486': 37, '487': 37,
+  '488': 47, '490': 37, '491': 37, '492': 27, '493': 19, '494': 37,
+  '495': 37, '496': 47, '497': 47, '498': 19, '465': 99,
+};
+
 async function logOntraportTransaction(contactId: string, productIds: string[]) {
   try {
     await ontraportRequest('POST', 'transaction/processManual', {
       contact_id: parseInt(contactId),
       chargeNow: 'chargeLog',
       offer: {
-        products: productIds.map(id => ({ id: parseInt(id), quantity: 1 })),
+        products: productIds.map(id => ({
+          id: parseInt(id),
+          quantity: 1,
+          total: FLASH_SALE_PRICES[id] || 0,
+          price: [{ price: FLASH_SALE_PRICES[id] || 0, payment_count: 1, unit: 'month' }],
+        })),
       },
     });
   } catch (err) {
