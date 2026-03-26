@@ -9,7 +9,7 @@ const ONTRAPORT_WEBHOOK_SECRET = import.meta.env.ONTRAPORT_WEBHOOK_SECRET || 'yP
 const ONTRAPORT_API_KEY = import.meta.env.ONTRAPORT_API_KEY || 'TEb2KY9mn3y0BC5';
 const ONTRAPORT_APP_ID = import.meta.env.ONTRAPORT_APP_ID || '2_188475_25BL5Wepb';
 const MEMBERS_WEBHOOK_URL = 'https://fightscience.tv/api/webhook/ontraport';
-const FLASH_SALE_DELIVERY_AUTOMATION_ID = 251;
+// Delivery emails handled by individual product automations in Ontraport
 const ADMIN_EMAIL = 'support@fightinstrong.org';
 const FLASH_SALE_STARTED_TAG = 'Flash Sale Started';
 const FLASH_SALE_PURCHASED_TAG = 'Flash Sale Purchased';
@@ -134,18 +134,7 @@ export const POST: APIRoute = async ({ request }) => {
     if (contactId) {
       await logOntraportTransaction(contactId, productIds);
 
-      // Step 3: Add contact to Flash Sale Delivery automation to send confirmation email
-      try {
-        await ontraportRequest('PUT', 'objects/subscribe', {
-          objectID: 0,
-          ids: [parseInt(contactId)],
-          add_list: [FLASH_SALE_DELIVERY_AUTOMATION_ID],
-        });
-      } catch (err) {
-        console.error('Failed to add contact to delivery automation (non-blocking):', err);
-      }
-
-      // Step 4: Remove "Flash Sale Started" tag, add "Flash Sale Purchased" tag
+      // Step 3: Remove "Flash Sale Started" tag, add "Flash Sale Purchased" tag
       try {
         await ontraportRequest('DELETE', 'Contacts/tag', {
           objectID: 0,
