@@ -5,6 +5,60 @@ import Stripe from 'stripe';
 import { getProductById } from '../../data/flash-sale-products';
 
 const stripe = new Stripe(import.meta.env.STRIPE_SECRET_KEY);
+const ONTRAPORT_API_KEY = import.meta.env.ONTRAPORT_API_KEY || 'TEb2KY9mn3y0BC5';
+const ONTRAPORT_APP_ID = import.meta.env.ONTRAPORT_APP_ID || '2_188475_25BL5Wepb';
+const FLASH_SALE_STARTED_TAG = 'Flash Sale Started';
+
+async function ontraportRequest(method: string, endpoint: string, body?: Record<string, unknown>) {
+  const url = `https://api.ontraport.com/1/${endpoint}`;
+  const res = await fetch(url, {
+    method,
+    headers: {
+      'Api-Key': ONTRAPORT_API_KEY,
+      'Api-Appid': ONTRAPORT_APP_ID,
+      'Content-Type': 'application/json',
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const text = await res.text();
+  try { return JSON.parse(text); } catch { return { error: text }; }
+}
+
+async function captureAbandonmentContact(email: string, firstName: string, lastName: string, productNames: string[]) {
+  try {
+    // Find or create contact
+    const searchResult = await ontraportRequest('GET',
+      `Contacts?search=${encodeURIComponent(email)}&searchNotes=true&range=1`
+    );
+    let contactId: string;
+    if (searchResult?.data?.length > 0) {
+      contactId = searchResult.data[0].id;
+      await ontraportRequest('PUT', 'Contacts', {
+        id: contactId,
+        firstname: firstName,
+        lastname: lastName,
+      });
+    } else {
+      const createResult = await ontraportRequest('POST', 'Contacts', {
+        firstname: firstName,
+        lastname: lastName,
+        email,
+      });
+      contactId = createResult?.data?.id;
+    }
+
+    if (contactId) {
+      // Add "Flash Sale Started" tag
+      await ontraportRequest('PUT', 'Contacts/tag', {
+        objectID: 0,
+        ids: [parseInt(contactId)],
+        add_list: [FLASH_SALE_STARTED_TAG],
+      });
+    }
+  } catch (err) {
+    console.error('Failed to capture abandonment contact (non-blocking):', err);
+  }
+}
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -44,6 +98,10 @@ export const POST: APIRoute = async ({ request }) => {
         error: 'No valid products selected',
       }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
+
+    // Capture contact in Ontraport for abandonment tracking (non-blocking)
+    const productNames = validProductIds.map(id => getProductById(id)?.name || '').filter(Boolean);
+    captureAbandonmentContact(email, firstName, lastName, productNames).catch(() => {});
 
     // Create Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({

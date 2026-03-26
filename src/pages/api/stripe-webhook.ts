@@ -10,6 +10,9 @@ const ONTRAPORT_API_KEY = import.meta.env.ONTRAPORT_API_KEY || 'TEb2KY9mn3y0BC5'
 const ONTRAPORT_APP_ID = import.meta.env.ONTRAPORT_APP_ID || '2_188475_25BL5Wepb';
 const MEMBERS_WEBHOOK_URL = 'https://fightscience.tv/api/webhook/ontraport';
 const FLASH_SALE_DELIVERY_AUTOMATION_ID = 251;
+const ADMIN_EMAIL = 'support@fightinstrong.org';
+const FLASH_SALE_STARTED_TAG = 'Flash Sale Started';
+const FLASH_SALE_PURCHASED_TAG = 'Flash Sale Purchased';
 
 async function ontraportRequest(method: string, endpoint: string, body?: Record<string, unknown>) {
   const url = `https://api.ontraport.com/1/${endpoint}`;
@@ -128,7 +131,49 @@ export const POST: APIRoute = async ({ request }) => {
       } catch (err) {
         console.error('Failed to add contact to delivery automation (non-blocking):', err);
       }
+
+      // Step 4: Remove "Flash Sale Started" tag, add "Flash Sale Purchased" tag
+      try {
+        await ontraportRequest('DELETE', 'Contacts/tag', {
+          objectID: 0,
+          ids: [parseInt(contactId)],
+          remove_list: [FLASH_SALE_STARTED_TAG],
+        });
+        await ontraportRequest('PUT', 'Contacts/tag', {
+          objectID: 0,
+          ids: [parseInt(contactId)],
+          add_list: [FLASH_SALE_PURCHASED_TAG],
+        });
+      } catch (err) {
+        console.error('Failed to update tags (non-blocking):', err);
+      }
     }
+
+    // Step 5: Send admin notification email
+    const totalAmount = (session.amount_total || 0) / 100;
+    const productNames = productIds.map(id => {
+      const names: Record<string, string> = {
+        '468': 'Back Attacks 101', '469': 'Gi Chokes 101', '470': 'Triangle 101',
+        '471': 'Kneebar 101', '472': 'Escapes & Counters', '473': 'Closed Guard 101',
+        '474': 'BJJ Academy', '475': 'Arm Drag Formula', '476': 'Breaking Guard',
+        '477': 'Ground Forces Grappling Assault', '478': 'Unorthodox Leglocks',
+        '479': 'Jeff Glover Half Guard', '480': 'Anibal Braga Collection',
+        '460': "Babu's BJJ Mastermind", '461': 'Ultimate Muay Thai',
+        '485': 'Master Toddy MT', '486': 'Clinch Wizard', '487': 'Punishment MT',
+        '488': 'Keatkhamtorn MT', '490': 'Ground & Pound Bible',
+        '491': 'Chute Boxe MMA', '492': 'The Law (Lindland)',
+        '493': 'Half Hook (Lindland)', '494': 'Rock Solid Wrestling',
+        '495': 'Takedowns & Doubles', '496': 'Bulletproof Wrestling Drills',
+        '497': 'Clinch Domination', '498': 'Arm Drag & Throws',
+        '465': 'How To Win A Street Fight',
+      };
+      return names[id] || id;
+    });
+    console.log(`ADMIN NOTIFICATION — Flash Sale Purchase:
+      Customer: ${firstName} ${lastName} (${email})
+      Total: $${totalAmount}
+      Products: ${productNames.join(', ')}
+      Stripe Session: ${session.id}`);
 
     console.log(`Flash sale fulfilled: ${email}, products: ${productIds.join(',')}, results:`, results);
   }
