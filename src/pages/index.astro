@@ -107,6 +107,7 @@ const disciplines = ['bjj', 'muay-thai', 'wrestling', 'mma', 'self-defense'] as 
       <button class="modal-close" id="modal-close">&times;</button>
       <h2>Complete Your Order</h2>
       <p class="modal-summary" id="modal-summary"></p>
+      <div class="cart-items" id="cart-items"></div>
       <form id="checkout-form">
         <div class="form-row">
           <div class="form-field">
@@ -174,6 +175,14 @@ const disciplines = ['bjj', 'muay-thai', 'wrestling', 'mma', 'self-defense'] as 
   checkboxes.forEach(cb => cb.addEventListener('change', updateCart));
 
   btnCheckout.addEventListener('click', () => {
+    // Build cart items list
+    const cartItemsEl = document.getElementById('cart-items')!;
+    const selected = document.querySelectorAll<HTMLInputElement>('.course-checkbox:checked');
+    let html = '';
+    selected.forEach(cb => {
+      html += `<div class="cart-item"><span class="cart-item-name">${cb.dataset.name}</span><span class="cart-item-price">$${cb.dataset.price}</span></div>`;
+    });
+    cartItemsEl.innerHTML = html;
     checkoutModal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
   });
@@ -463,6 +472,23 @@ const disciplines = ['bjj', 'muay-thai', 'wrestling', 'mma', 'self-defense'] as 
   }
   .modal-content h2 { font-family: var(--font-heading); font-size: 1.75rem; font-weight: 700; margin-bottom: var(--space-sm); }
   .modal-summary { font-family: var(--font-mono); font-size: 0.85rem; color: var(--color-muted); margin-bottom: var(--space-xl); text-transform: uppercase; letter-spacing: 0.05em; }
+  .cart-items {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-bottom: var(--space-lg);
+    border: 2px solid var(--color-bg);
+  }
+  .cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid var(--color-bg);
+    font-size: 0.9rem;
+  }
+  .cart-item:last-child { border-bottom: none; }
+  .cart-item-name { font-family: var(--font-body); color: var(--color-primary); }
+  .cart-item-price { font-family: var(--font-mono); font-weight: 700; color: var(--color-accent-red); }
   .form-row { display: flex; gap: var(--space-md); }
   .form-field { flex: 1; margin-bottom: var(--space-md); }
   .form-field label { font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-muted); display: block; margin-bottom: var(--space-xs); }
