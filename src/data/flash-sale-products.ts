@@ -313,7 +313,7 @@ export const flashSaleProducts: FlashSaleProduct[] = [
     description: 'Foot sweeps, shrugs, slide-bys, throw-bys, and the arm drag — quick-score techniques that win matches.',
     fullPrice: 47,
     salePrice: 19,
-    image: '/images/courses/complete-wrestling-hero.jpg',
+    image: '/images/courses/wrestling-takedowns-drags.jpg',
     isBundle: false,
     isFeatured: false,
   },
