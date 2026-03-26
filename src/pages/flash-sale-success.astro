@@ -1,0 +1,175 @@
+---
+import SalesLayout from '../layouts/SalesLayout.astro';
+---
+
+<SalesLayout title="You're In! — FightScience" description="Your FightScience training is being unlocked.">
+  <section class="success-hero">
+    <div class="container">
+      <h1>You're In!</h1>
+      <p class="success-sub">Your training is being unlocked right now.</p>
+    </div>
+  </section>
+
+  <section class="success-body">
+    <div class="container">
+      <div class="success-card">
+        <h2>Here's what happens next:</h2>
+
+        <div class="step">
+          <span class="step-num">1</span>
+          <div>
+            <strong>Check your email</strong>
+            <p>You'll receive a confirmation email with your login details within the next few minutes.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <span class="step-num">2</span>
+          <div>
+            <strong>Log in to your training</strong>
+            <p>Go to <a href="https://fightscience.tv" class="link">fightscience.tv</a> and log in with your email.</p>
+            <p><strong>New to FightScience?</strong> Your temporary password is <code>fs2026</code> — you'll be prompted to change it on first login.</p>
+            <p><strong>Already have an account?</strong> Your new courses have been added automatically.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <span class="step-num">3</span>
+          <div>
+            <strong>Start training</strong>
+            <p>Everything is available immediately. No drip schedule, no waiting. Your courses are on your dashboard.</p>
+          </div>
+        </div>
+
+        <div class="guarantee-note">
+          <strong>60-Day Money-Back Guarantee</strong>
+          <p>If you're not satisfied with your training, just reply to any email from us and we'll refund you. No hoops. No hassle.</p>
+        </div>
+
+        <p class="support-note">Having trouble logging in? Reply to your confirmation email or contact us at <a href="mailto:support@fightinstrong.org" class="link">support@fightinstrong.org</a></p>
+      </div>
+    </div>
+  </section>
+</SalesLayout>
+
+<style>
+  .success-hero {
+    background: var(--color-primary);
+    color: var(--color-bg);
+    padding: var(--space-4xl) 0 var(--space-2xl);
+    text-align: center;
+  }
+
+  .success-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: var(--space-md);
+  }
+
+  .success-sub {
+    font-size: 1.25rem;
+    color: #B0ACA7;
+  }
+
+  .success-body {
+    padding: var(--space-3xl) 0 var(--space-4xl);
+  }
+
+  .success-card {
+    max-width: 640px;
+    margin: 0 auto;
+    background: var(--color-surface);
+    border: var(--border);
+    box-shadow: var(--shadow);
+    padding: var(--space-2xl);
+  }
+
+  .success-card h2 {
+    font-family: var(--font-heading);
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: var(--space-xl);
+  }
+
+  .step {
+    display: flex;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-xl);
+  }
+
+  .step-num {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: var(--color-accent-red);
+    color: #fff;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--color-primary);
+  }
+
+  .step strong {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    display: block;
+    margin-bottom: var(--space-xs);
+  }
+
+  .step p {
+    font-size: 0.95rem;
+    color: #444;
+    margin: var(--space-xs) 0;
+  }
+
+  code {
+    font-family: var(--font-mono);
+    background: #F5F0EB;
+    padding: 2px 8px;
+    border: 1px solid #ddd;
+    font-weight: 700;
+  }
+
+  .link {
+    color: var(--color-accent-red);
+    font-weight: 700;
+    text-decoration: underline;
+  }
+
+  .guarantee-note {
+    background: #F5F0EB;
+    border: 2px solid var(--color-highlight);
+    padding: var(--space-lg);
+    margin: var(--space-xl) 0;
+  }
+
+  .guarantee-note strong {
+    font-family: var(--font-heading);
+    color: var(--color-primary);
+    display: block;
+    margin-bottom: var(--space-xs);
+  }
+
+  .guarantee-note p {
+    font-size: 0.9rem;
+    color: #555;
+    margin: 0;
+  }
+
+  .support-note {
+    font-size: 0.85rem;
+    color: var(--color-muted);
+    text-align: center;
+    margin-top: var(--space-xl);
+  }
+
+  .container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 var(--gutter);
+  }
+</style>

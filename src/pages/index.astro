@@ -1,0 +1,537 @@
+---
+import SalesLayout from '../layouts/SalesLayout.astro';
+import { flashSaleProducts, disciplineInfo } from '../data/flash-sale-products';
+
+const disciplines = ['bjj', 'muay-thai', 'wrestling', 'mma', 'self-defense'] as const;
+---
+
+<SalesLayout title="FightScience Flash Sale — Up to 75% Off" description="Limited time flash sale on individual FightScience courses. BJJ, Muay Thai, Wrestling, MMA, and Self-Defense training from world-class instructors at the lowest prices ever.">
+
+  <!-- Hero -->
+  <section class="sale-hero">
+    <div class="container">
+      <p class="sale-label">Limited Time Only</p>
+      <h1>Flash Sale</h1>
+      <p class="sale-sub">Pick the courses you want. Check the box. Pay once. <strong>Train forever.</strong></p>
+      <div class="sale-stats">
+        <div class="sale-stat">
+          <span class="sale-stat-num">25+</span>
+          <span class="sale-stat-label">Programs</span>
+        </div>
+        <div class="sale-stat">
+          <span class="sale-stat-num">75%</span>
+          <span class="sale-stat-label">Off Select Courses</span>
+        </div>
+        <div class="sale-stat">
+          <span class="sale-stat-num">60-Day</span>
+          <span class="sale-stat-label">Money-Back Guarantee</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Course Sections -->
+  {disciplines.map(disc => {
+    const info = disciplineInfo[disc];
+    const products = flashSaleProducts.filter(p => p.discipline === disc);
+    return (
+      <section class="sale-section" id={disc}>
+        <div class="container">
+          <div class="discipline-header" style={`--disc-color: ${info.color};`}>
+            <span class="discipline-tag">{info.name}</span>
+            <h2>{info.name} Courses</h2>
+          </div>
+          <div class="sale-grid">
+            {products.map(product => (
+              <div
+                class={`sale-card ${product.isBundle ? 'bundle-card' : ''} ${product.isFeatured ? 'featured' : ''}`}
+                data-product-id={product.ontraportProductId}
+                data-price={product.salePrice}
+                data-name={product.name}
+              >
+                <div class="sale-card-img">
+                  <img src={product.image} alt={product.name} loading="lazy" />
+                  <div class="price-ribbon">${product.salePrice}</div>
+                  <div class="instructor-bar">{product.instructor}</div>
+                </div>
+                <div class="sale-card-body">
+                  <div class="sale-card-header">
+                    <span class={`tag tag-${disc}`}>{info.name}</span>
+                    <span class="video-count">{product.videoCount} Videos</span>
+                  </div>
+                  <h3>{product.name}</h3>
+                  <p class="sale-desc">{product.description}</p>
+                  <div class="sale-pricing">
+                    <span class="price-old">${product.fullPrice}</span>
+                    <span class="price-sale">${product.salePrice}</span>
+                  </div>
+                  <label class="add-checkbox">
+                    <input type="checkbox" class="course-checkbox" data-id={product.ontraportProductId} data-price={product.salePrice} data-name={product.name} />
+                    <span class="checkbox-label">Add to Order</span>
+                    <span class="checkbox-label-checked">Added</span>
+                  </label>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  })}
+
+  <!-- Guarantee -->
+  <section class="sale-section guarantee-section">
+    <div class="container">
+      <div class="guarantee-box">
+        <h2>60-Day Money-Back Guarantee</h2>
+        <p>Every course comes with our 60-day, no-questions-asked money-back guarantee. If you're not satisfied with your training, email us and we'll refund you. No hoops. No hassle.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sticky Cart -->
+  <div class="sticky-cart" id="sticky-cart" style="display: none;">
+    <div class="cart-inner">
+      <div class="cart-info">
+        <span class="cart-count" id="cart-count">0</span> courses selected
+        <span class="cart-divider">|</span>
+        <span class="cart-total">Total: <strong id="cart-total">$0</strong></span>
+      </div>
+      <button class="btn-checkout" id="btn-checkout">Checkout</button>
+    </div>
+  </div>
+
+  <!-- Checkout Modal -->
+  <div class="modal-overlay" id="checkout-modal" style="display: none;">
+    <div class="modal-content">
+      <button class="modal-close" id="modal-close">&times;</button>
+      <h2>Complete Your Order</h2>
+      <p class="modal-summary" id="modal-summary"></p>
+      <form id="checkout-form">
+        <div class="form-row">
+          <div class="form-field">
+            <label for="firstName">First Name</label>
+            <input type="text" id="firstName" name="firstName" required />
+          </div>
+          <div class="form-field">
+            <label for="lastName">Last Name</label>
+            <input type="text" id="lastName" name="lastName" required />
+          </div>
+        </div>
+        <div class="form-field">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required />
+        </div>
+        <button type="submit" class="btn-pay" id="btn-pay">
+          Pay <span id="pay-total">$0</span> — Secure Checkout
+        </button>
+        <p class="checkout-note">You'll be redirected to Stripe's secure checkout to complete payment.</p>
+      </form>
+    </div>
+  </div>
+
+</SalesLayout>
+
+<script>
+  const checkboxes = document.querySelectorAll<HTMLInputElement>('.course-checkbox');
+  const stickyCart = document.getElementById('sticky-cart')!;
+  const cartCount = document.getElementById('cart-count')!;
+  const cartTotal = document.getElementById('cart-total')!;
+  const btnCheckout = document.getElementById('btn-checkout')!;
+  const checkoutModal = document.getElementById('checkout-modal')!;
+  const modalClose = document.getElementById('modal-close')!;
+  const modalSummary = document.getElementById('modal-summary')!;
+  const payTotal = document.getElementById('pay-total')!;
+  const checkoutForm = document.getElementById('checkout-form') as HTMLFormElement;
+
+  function updateCart() {
+    const selected = document.querySelectorAll<HTMLInputElement>('.course-checkbox:checked');
+    let total = 0;
+    const names: string[] = [];
+    selected.forEach(cb => {
+      total += parseInt(cb.dataset.price || '0');
+      names.push(cb.dataset.name || '');
+    });
+
+    cartCount.textContent = String(selected.length);
+    cartTotal.textContent = `$${total}`;
+    payTotal.textContent = `$${total}`;
+    stickyCart.style.display = selected.length > 0 ? 'block' : 'none';
+
+    // Update card styling
+    document.querySelectorAll('.sale-card').forEach(card => {
+      const cb = card.querySelector<HTMLInputElement>('.course-checkbox');
+      if (cb?.checked) {
+        card.classList.add('selected');
+      } else {
+        card.classList.remove('selected');
+      }
+    });
+
+    modalSummary.textContent = `${selected.length} course${selected.length !== 1 ? 's' : ''} selected — $${total} total`;
+  }
+
+  checkboxes.forEach(cb => cb.addEventListener('change', updateCart));
+
+  btnCheckout.addEventListener('click', () => {
+    checkoutModal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  });
+
+  modalClose.addEventListener('click', () => {
+    checkoutModal.style.display = 'none';
+    document.body.style.overflow = '';
+  });
+
+  checkoutModal.addEventListener('click', (e) => {
+    if (e.target === checkoutModal) {
+      checkoutModal.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+  });
+
+  checkoutForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('btn-pay') as HTMLButtonElement;
+    btn.disabled = true;
+    btn.textContent = 'Processing...';
+
+    const selected = document.querySelectorAll<HTMLInputElement>('.course-checkbox:checked');
+    const productIds = Array.from(selected).map(cb => cb.dataset.id).filter(Boolean);
+
+    const firstName = (document.getElementById('firstName') as HTMLInputElement).value;
+    const lastName = (document.getElementById('lastName') as HTMLInputElement).value;
+    const email = (document.getElementById('email') as HTMLInputElement).value;
+
+    try {
+      const res = await fetch('/api/flash-sale-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, firstName, lastName, productIds }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert('Something went wrong. Please try again.');
+        btn.disabled = false;
+        btn.textContent = `Pay ${payTotal.textContent} — Secure Checkout`;
+      }
+    } catch {
+      alert('Something went wrong. Please try again.');
+      btn.disabled = false;
+      btn.textContent = `Pay ${payTotal.textContent} — Secure Checkout`;
+    }
+  });
+</script>
+
+<style>
+  /* ── Hero ───────────────────────────────────── */
+  .sale-hero {
+    background: var(--color-primary);
+    color: var(--color-bg);
+    padding: var(--space-4xl) 0;
+    text-align: center;
+  }
+  .sale-label {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--color-accent-red);
+    margin-bottom: var(--space-md);
+  }
+  .sale-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 4rem;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    margin-bottom: var(--space-lg);
+  }
+  .sale-hero .sale-sub {
+    font-size: 1.25rem;
+    color: #B0ACA7;
+    max-width: 640px;
+    margin: 0 auto var(--space-3xl);
+  }
+  .sale-hero .sale-sub strong { color: var(--color-highlight); }
+  .sale-stats {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-3xl);
+    flex-wrap: wrap;
+  }
+  .sale-stat { display: flex; flex-direction: column; align-items: center; gap: var(--space-xs); }
+  .sale-stat-num { font-family: var(--font-heading); font-size: 2.5rem; font-weight: 700; color: var(--color-highlight); }
+  .sale-stat-label { font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: #888; }
+
+  /* ── Sections ──────────────────────────────── */
+  .sale-section { padding: var(--space-section) 0; }
+  .sale-section:nth-child(even) { background: var(--color-bg); }
+  .discipline-header { margin-bottom: var(--space-2xl); }
+  .discipline-tag {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--disc-color);
+    display: block;
+    margin-bottom: var(--space-sm);
+  }
+  .discipline-header h2 {
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--color-primary);
+  }
+
+  /* ── Grid ───────────────────────────────────── */
+  .sale-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-xl); }
+
+  /* ── Cards ──────────────────────────────────── */
+  .sale-card {
+    background: var(--color-surface);
+    border: var(--border);
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+    overflow: hidden;
+  }
+  .sale-card:hover { transform: translate(-2px, -2px); box-shadow: var(--shadow-hover); }
+  .sale-card.featured { border-color: var(--color-highlight); border-width: 4px; }
+  .sale-card.bundle-card { border-color: var(--color-accent-red); border-width: 4px; grid-column: span 2; }
+  .sale-card.selected { border-color: var(--color-accent-red) !important; box-shadow: 0 0 0 3px rgba(214, 40, 40, 0.3), var(--shadow) !important; }
+
+  /* ── Card Image ─────────────────────────────── */
+  .sale-card-img { position: relative; overflow: hidden; aspect-ratio: 16/9; }
+  .sale-card-img img { width: 100%; height: 100%; object-fit: cover; }
+  .price-ribbon {
+    position: absolute;
+    top: 10px;
+    right: 0;
+    background: var(--color-accent-red);
+    color: #fff;
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 700;
+    padding: 6px 16px;
+    box-shadow: 2px 2px 0px rgba(0,0,0,0.3);
+  }
+  .instructor-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,0.8);
+    color: #fff;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 8px 12px;
+    text-align: center;
+  }
+
+  /* ── Card Body ──────────────────────────────── */
+  .sale-card-body { padding: var(--space-lg); display: flex; flex-direction: column; flex-grow: 1; }
+  .sale-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-sm); }
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.2rem 0.6rem;
+    border: 2px solid;
+    color: #fff;
+  }
+  .tag-bjj { background: #2D6A4F; border-color: #2D6A4F; }
+  .tag-muay-thai { background: #D62828; border-color: #D62828; }
+  .tag-wrestling { background: #1D3557; border-color: #1D3557; }
+  .tag-mma { background: #7B2CBF; border-color: #7B2CBF; }
+  .tag-self-defense { background: #E76F51; border-color: #E76F51; }
+  .video-count { font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700; color: var(--color-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .sale-card h3 { font-family: var(--font-heading); font-size: 1.35rem; font-weight: 700; color: #000; line-height: 1.2; margin-bottom: var(--space-sm); }
+  .sale-desc { font-size: 0.9rem; line-height: 1.5; color: #444; margin-bottom: var(--space-md); flex-grow: 1; }
+  .sale-pricing { display: flex; align-items: baseline; gap: var(--space-md); margin-bottom: var(--space-md); }
+  .price-old { font-family: var(--font-mono); font-size: 1rem; font-weight: 700; color: var(--color-muted); text-decoration: line-through; }
+  .price-sale { font-family: var(--font-heading); font-size: 2rem; font-weight: 700; color: var(--color-accent-red); }
+
+  /* ── Checkbox ───────────────────────────────── */
+  .add-checkbox {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    cursor: pointer;
+    background: var(--color-primary);
+    color: #fff;
+    padding: 0.75rem 1.25rem;
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: var(--border);
+    box-shadow: var(--shadow);
+    transition: transform var(--transition-normal), box-shadow var(--transition-normal), background var(--transition-normal);
+    justify-content: center;
+  }
+  .add-checkbox:hover { transform: translate(-2px, -2px); box-shadow: var(--shadow-hover); }
+  .add-checkbox:active { transform: translate(2px, 2px); box-shadow: var(--shadow-active); }
+  .add-checkbox input { display: none; }
+  .checkbox-label-checked { display: none; }
+  .add-checkbox:has(input:checked) { background: var(--color-accent-red); }
+  .add-checkbox:has(input:checked) .checkbox-label { display: none; }
+  .add-checkbox:has(input:checked) .checkbox-label-checked { display: inline; }
+
+  /* ── Sticky Cart ────────────────────────────── */
+  .sticky-cart {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--color-primary);
+    border-top: 4px solid var(--color-accent-red);
+    z-index: 1000;
+    padding: var(--space-md) 0;
+    animation: slideUp 0.3s ease;
+  }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .cart-inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 var(--gutter);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .cart-info { color: #fff; font-family: var(--font-heading); font-size: 1.1rem; }
+  .cart-count { font-size: 1.5rem; font-weight: 700; color: var(--color-highlight); }
+  .cart-divider { color: #555; margin: 0 var(--space-md); }
+  .cart-total strong { color: var(--color-highlight); font-size: 1.3rem; }
+  .btn-checkout {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.85rem 2.5rem;
+    background: var(--color-accent-red);
+    color: #fff;
+    border: 3px solid #fff;
+    box-shadow: 4px 4px 0px rgba(255,255,255,0.3);
+    cursor: pointer;
+    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+  }
+  .btn-checkout:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0px rgba(255,255,255,0.3); }
+
+  /* ── Modal ──────────────────────────────────── */
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-lg);
+  }
+  .modal-content {
+    background: var(--color-surface);
+    border: var(--border);
+    box-shadow: 8px 8px 0px var(--color-primary);
+    max-width: 500px;
+    width: 100%;
+    padding: var(--space-2xl);
+    position: relative;
+  }
+  .modal-close {
+    position: absolute;
+    top: var(--space-md);
+    right: var(--space-md);
+    font-size: 1.5rem;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: var(--color-muted);
+  }
+  .modal-content h2 { font-family: var(--font-heading); font-size: 1.75rem; font-weight: 700; margin-bottom: var(--space-sm); }
+  .modal-summary { font-family: var(--font-mono); font-size: 0.85rem; color: var(--color-muted); margin-bottom: var(--space-xl); text-transform: uppercase; letter-spacing: 0.05em; }
+  .form-row { display: flex; gap: var(--space-md); }
+  .form-field { flex: 1; margin-bottom: var(--space-md); }
+  .form-field label { font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-muted); display: block; margin-bottom: var(--space-xs); }
+  .form-field input {
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    padding: 0.75rem;
+    border: var(--border);
+    background: var(--color-bg);
+    box-sizing: border-box;
+  }
+  .form-field input:focus { outline: none; border-color: var(--color-accent-red); }
+  .btn-pay {
+    width: 100%;
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 1rem;
+    background: var(--color-accent-red);
+    color: #fff;
+    border: var(--border);
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    margin-top: var(--space-md);
+    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+  }
+  .btn-pay:hover { transform: translate(-2px, -2px); box-shadow: var(--shadow-hover); }
+  .btn-pay:disabled { opacity: 0.7; cursor: not-allowed; transform: none; box-shadow: var(--shadow); }
+  .checkout-note { font-size: 0.8rem; color: var(--color-muted); text-align: center; margin-top: var(--space-md); }
+
+  /* ── Guarantee ──────────────────────────────── */
+  .guarantee-section { background: var(--color-primary) !important; color: var(--color-bg); }
+  .guarantee-box {
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+    border: 3px solid var(--color-highlight);
+    box-shadow: 5px 5px 0px var(--color-highlight);
+    padding: var(--space-3xl);
+  }
+  .guarantee-box h2 { font-family: var(--font-heading); font-size: 2rem; font-weight: 700; color: var(--color-highlight); margin-bottom: var(--space-lg); }
+  .guarantee-box p { font-size: 1.1rem; line-height: 1.6; color: #B0ACA7; }
+
+  /* ── Container ──────────────────────────────── */
+  .container { max-width: var(--max-width); margin: 0 auto; padding: 0 var(--gutter); }
+
+  /* ── Bottom padding for sticky cart ─────────── */
+  body { padding-bottom: 80px; }
+
+  /* ── Responsive ─────────────────────────────── */
+  @media (max-width: 1024px) {
+    .sale-grid { grid-template-columns: repeat(2, 1fr); }
+    .sale-card.bundle-card { grid-column: span 2; }
+  }
+  @media (max-width: 768px) {
+    .sale-hero h1 { font-size: 2.75rem; }
+    .sale-grid { grid-template-columns: 1fr; }
+    .sale-card.bundle-card { grid-column: span 1; }
+    .sale-stats { gap: var(--space-xl); }
+    .sale-stat-num { font-size: 2rem; }
+    .cart-inner { flex-direction: column; gap: var(--space-md); text-align: center; }
+    .form-row { flex-direction: column; gap: 0; }
+  }
+  @media (max-width: 640px) {
+    .sale-hero h1 { font-size: 2.25rem; }
+    .sale-hero { padding: var(--space-3xl) 0; }
+    .sale-section { padding: var(--space-3xl) 0; }
+  }
+</style>

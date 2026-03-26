@@ -1,0 +1,461 @@
+import Stripe from 'stripe';
+
+const flashSaleProducts = [
+  // ── BJJ ────────────────────────────────────────
+  {
+    ontraportProductId: "468",
+    name: "Back Attacks 101",
+    instructor: 'Scott "Bam Bam" Sullivan, PhD',
+    discipline: "bjj",
+    videoCount: 20,
+    description: "Complete back attack system — hooks, controls, and finishes from the back position.",
+    fullPrice: 67,
+    salePrice: 27,
+    image: "/images/courses/back-attacks.jpg",
+    isBundle: false,
+    isFeatured: false
+  },
+  {
+    ontraportProductId: "469",
+    name: "Gi Chokes 101",
+    instructor: 'Scott "Bam Bam" Sullivan, PhD',
+    discipline: "bjj",
+    videoCount: 26,
+    description: "Every gi choke you need — cross chokes, loop chokes, baseball bats, and collar attacks.",
+    fullPrice: 67,
+    salePrice: 27,
+    image: "/images/courses/gi-choke.jpg",
+    isBundle: false,
+    isFeatured: false
+  },
+  {
+    ontraportProductId: "470",
+    name: "Triangle 101",
+    instructor: 'Scott "Bam Bam" Sullivan, PhD',
+    discipline: "bjj",
+    videoCount: 27,
+    description: "Triangle setups, entries, and finishes from every position — guard, mount, and side control.",
+    fullPrice: 67,
+    salePrice: 27,
+    image: "/images/courses/triangle-101.jpg",
+    isBundle: false,
+    isFeatured: false
+  },
+  {
+    ontraportProductId: "471",
+    name: "Kneebar 101",
+    instructor: 'Scott "Bam Bam" Sullivan, PhD',
+    discipline: "bjj",
+    videoCount: 15,
+    description: "Kneebar attacks, entries, and setups — the leg lock most grapplers overlook.",
+    fullPrice: 47,
+    salePrice: 19,
+    image: "/images/courses/kneebar.jpg",
+    isBundle: false,
+    isFeatured: false
+  },
+  {
+    ontraportProductId: "472",
+    name: "Escapes & Counters",
+    instructor: 'Scott "Bam Bam" Sullivan, PhD',
+    discipline: "bjj",
+    videoCount: 39,
+    description: "Escape every bad position — mount escapes, side control escapes, back escapes, and submission counters.",
+    fullPrice: 97,
+    salePrice: 37,
+    image: "/images/courses/escapes-counters.jpg",
+    isBundle: false,
+    isFeatured: false
+  },
+  {
+    ontraportProductId: "473",
+    name: "Closed Guard 101",
+    instructor: 'Scott "Bam Bam" Sullivan, PhD',
+    discipline: "bjj",
+    videoCount: 33,
+    description: "Master the closed guard — sweeps, submissions, and controls from the most fundamental position in BJJ.",
+    fullPrice: 67,
+    salePrice: 27,
+    image: "/images/courses/closed-guard-101.jpg",
+    isBundle: false,
+    isFeatured: false
+  },
+  {
+    ontraportProductId: "474",
+    name: "BJJ Academy",
+    instructor: 'Scott "Bam Bam" Sullivan, PhD',
+    discipline: "bjj",
+    videoCount: 90,
+    description: "The complete BJJ academy experience — 90 videos covering techniques, drills, and rolling concepts across all positions.",
+    fullPrice: 147,
+    salePrice: 47,
+    image: "/images/courses/bjj-101-hero.jpg",
+    isBundle: false,
+    isFeatured: true
+  },
+  {
+    ontraportProductId: "475",
+    name: "Arm Drag Formula",
+    instructor: 'Scott "Bam Bam" Sullivan, PhD',
+    discipline: "bjj",
+    videoCount: 11,
+    description: "The arm drag is the single highest-percentage takedown setup in grappling. Learn it from every position.",
+    fullPrice: 37,
+    salePrice: 17,
+    image: "/images/courses/bjj-101-system-hero.jpg",
+    isBundle: false,
+    isFeatured: false
+  },
+  {
+    ontraportProductId: "476",
+    name: "Breaking Guard",
+    instructor: "Robson Robinho",
+    discipline: "bjj",
+    videoCount: 19,
+    description: "Systematic guard breaking and passing — posture, grips, and passes that work at every level.",
+    fullPrice: 67,
+    salePrice: 27,
+    image: "/images/courses/breaking-guard.jpg",
+    isBundle: false,
+    isFeatured: false
+  },
+  {
+    ontraportProductId: "477",
+    name: "Ground Forces Grappling Assault",
+    instructor: "Fadi Khouri",
+    discipline: "bjj",
+    videoCount: 97,
+    description: "4+ hours of elite grappling drills from a 3x IBJJF Gold Medalist — mobility, coordination, positional drilling, and scramble patterns.",
+    fullPrice: 147,
+    salePrice: 47,
+    image: "/images/courses/ground-forces.jpg",
+    isBundle: false,
+    isFeatured: true
+  },
+  {
+    ontraportProductId: "478",
+    name: "Unorthodox Leglocks",
+    instructor: "Josh Hill",
+    discipline: "bjj",
+    videoCount: 50,
+    description: "Advanced leg lock attacks your opponents won't see coming — heel hooks, toe holds, calf slicers, and unorthodox entries.",
+    fullPrice: 97,
+    salePrice: 37,
+    image: "/images/courses/unorthodox-leg-locks.jpg",
+    isBundle: false,
+    isFeatured: false
+  },
+  {
+    ontraportProductId: "479",
+    name: "Jeff Glover's Half Guard Formula",
+    instructor: "Jeff Glover",
+    discipline: "bjj",
+    videoCount: 14,
+    description: "Jeff Glover's deep half guard system — the sweeps, back takes, and submissions that made him a world-class competitor.",
+    fullPrice: 67,
+    salePrice: 27,
+    image: "/images/courses/deep-half-guard.jpg",
+    isBundle: false,
+    isFeatured: false
+  },
+  {
+    ontraportProductId: "480",
+    name: "Anibal Braga Collection",
+    instructor: "Master Anibal Braga",
+    discipline: "bjj",
+    videoCount: 71,
+    description: "7 complete programs from Master Anibal Braga — guard secrets, side control, half guard, lapel guard, omo plata, turtle attacks, and more.",
+    fullPrice: 147,
+    salePrice: 47,
+    image: "/images/courses/hangman.jpg",
+    isBundle: false,
+    isFeatured: true
+  },
+  {
+    ontraportProductId: "460",
+    name: "Babu's BJJ Mastermind",
+    instructor: 'Sergiio "Babu" Gasparelli',
+    discipline: "bjj",
+    videoCount: 153,
+    description: "12 complete programs from the BJJ coach of Nogueira, Machida, and Belfort. Side control, guard, mount, back mount, DLR, half guard, no-gi, and more.",
+    fullPrice: 299,
+    salePrice: 99,
+    image: "/images/courses/babu-bjj-hero.jpg",
+    isBundle: true,
+    isFeatured: false
+  },
+  // ── Muay Thai ──────────────────────────────────
+  {
+    ontraportProductId: "461",
+    name: "The Ultimate Muay Thai Training System",
+    instructor: 'Scott "Bam Bam" Sullivan, PhD',
+    discipline: "muay-thai",
+    videoCount: 307,
+    description: "13 volumes from fundamentals through advanced sparring. Home study, pad work, heavy bag, clinch, Thai Bible series, certification, and secrets from Thailand.",
+    fullPrice: 397,
+    salePrice: 197,
+    image: "/images/courses/ultimate-muay-thai.jpg",
+    isBundle: true,
+    isFeatured: false
+  },
+  {
+    ontraportProductId: "485",
+    name: "Master Toddy Muay Thai System",
+    instructor: "Master Toddy",
+    discipline: "muay-thai",
+    videoCount: 45,
+    description: "The legendary Master Toddy's complete training system — the man who trained Ramon Dekkers and dozens of world champions.",
+    fullPrice: 97,
+    salePrice: 37,
+    image: "/images/courses/master-toddy.jpg",
+    isBundle: false,
+    isFeatured: false
+  },
+  {
+    ontraportProductId: "486",
+    name: "Clinch Wizard",
+    instructor: "Kru Bee (Moonkondech)",
+    discipline: "muay-thai",
+    videoCount: 38,
+    description: "Master the Muay Thai clinch from a fighter who dominated Thailand's stadium circuits. Sweeps, dumps, knees, and elbows from the clinch.",
+    fullPrice: 97,
+    salePrice: 37,
+    image: "/images/courses/clinch-wizard.jpg",
+    isBundle: false,
+    isFeatured: false
+  },
+  {
+    ontraportProductId: "487",
+    name: "Punishment Muay Thai",
+    instructor: "Kevin Ross, Cyrus Washington & Kru Robert Perez",
+    discipline: "muay-thai",
+    videoCount: 45,
+    description: "A complete striking curriculum built around punishing combinations, counter-attacks, and ring generalship.",
+    fullPrice: 97,
+    salePrice: 37,
+    image: "/images/courses/punishment.jpg",
+    isBundle: false,
+    isFeatured: false
+  },
+  {
+    ontraportProductId: "488",
+    name: "Keatkhamtorn Muay Thai",
+    instructor: "Keatkhamtorn (Tiger Muay Thai)",
+    discipline: "muay-thai",
+    videoCount: 56,
+    description: "Train with a real Thai fighter from Tiger Muay Thai — authentic technique, pad work, and fight strategy straight from Thailand.",
+    fullPrice: 127,
+    salePrice: 47,
+    image: "/images/courses/keatkhamtorn.jpg",
+    isBundle: false,
+    isFeatured: false
+  },
+  // ── Wrestling ──────────────────────────────────
+  {
+    ontraportProductId: "494",
+    name: "Rock Solid Wrestling",
+    instructor: "Jon Trenge — 3x NCAA All-American",
+    discipline: "wrestling",
+    videoCount: 33,
+    description: "Build a bulletproof wrestling base — stance, motion, level changes, and the fundamental building blocks of championship wrestling.",
+    fullPrice: 97,
+    salePrice: 37,
+    image: "/images/courses/rock-solid.jpg",
+    isBundle: false,
+    isFeatured: false
+  },
+  {
+    ontraportProductId: "495",
+    name: "Takedowns & Doubles",
+    instructor: "Jon Trenge — 3x NCAA All-American",
+    discipline: "wrestling",
+    videoCount: 26,
+    description: "Master the double leg and single leg — setups, finishes, chain wrestling, and how to score takedowns against anyone.",
+    fullPrice: 97,
+    salePrice: 37,
+    image: "/images/courses/wrestling-takedowns.jpg",
+    isBundle: false,
+    isFeatured: false
+  },
+  {
+    ontraportProductId: "496",
+    name: "Bulletproof: High Performance Wrestling Drills",
+    instructor: "Jon Trenge — 3x NCAA All-American",
+    discipline: "wrestling",
+    videoCount: 49,
+    description: "49 videos of complete training drills for speed, timing, and technique — stance motion, quick ties, knee traps, hand fighting, fake-reshoot, drags, ducks, snaps. Plus complete sprawling series and leg attack counters.",
+    fullPrice: 127,
+    salePrice: 47,
+    image: "/images/courses/bulletproof.jpg",
+    isBundle: false,
+    isFeatured: false
+  },
+  {
+    ontraportProductId: "497",
+    name: "Clinch Domination",
+    instructor: "Jon Trenge — 3x NCAA All-American",
+    discipline: "wrestling",
+    videoCount: 35,
+    description: "Dominate the clinch position — pummeling, underhooks, body locks, and how to wrestle from the tie-up.",
+    fullPrice: 127,
+    salePrice: 47,
+    image: "/images/courses/clinch-domination.jpg",
+    isBundle: false,
+    isFeatured: false
+  },
+  {
+    ontraportProductId: "498",
+    name: "Arm Drag & Throws",
+    instructor: "Jon Trenge — 3x NCAA All-American",
+    discipline: "wrestling",
+    videoCount: 7,
+    description: "Foot sweeps, shrugs, slide-bys, throw-bys, and the arm drag — quick-score techniques that win matches.",
+    fullPrice: 47,
+    salePrice: 19,
+    image: "/images/courses/complete-wrestling-hero.jpg",
+    isBundle: false,
+    isFeatured: false
+  },
+  // ── MMA ────────────────────────────────────────
+  {
+    ontraportProductId: "490",
+    name: "Ground & Pound Bible",
+    instructor: "Kru Robert Perez",
+    discipline: "mma",
+    videoCount: 59,
+    description: "The complete ground and pound system — posture, positioning, striking from guard, half guard, mount, and side control.",
+    fullPrice: 97,
+    salePrice: 37,
+    image: "/images/courses/ground-and-pound-bible.jpg",
+    isBundle: false,
+    isFeatured: false
+  },
+  {
+    ontraportProductId: "491",
+    name: "Chute Boxe MMA Training System",
+    instructor: "Cyborg Santos",
+    discipline: "mma",
+    videoCount: 34,
+    description: "Train the Chute Boxe system — the camp that produced Wanderlei Silva, the Nogueira brothers, and Shogun Rua.",
+    fullPrice: 97,
+    salePrice: 37,
+    image: "/images/courses/cyborg-mma.jpg",
+    isBundle: false,
+    isFeatured: false
+  },
+  {
+    ontraportProductId: "492",
+    name: "The Law: Matt Lindland's Takedown & Dirty Boxing",
+    instructor: "Matt Lindland — Olympic Silver Medalist",
+    discipline: "mma",
+    videoCount: 15,
+    description: "Olympic medalist Matt Lindland's takedown and dirty boxing series — the wrestling-based MMA system that made him a UFC contender.",
+    fullPrice: 67,
+    salePrice: 27,
+    image: "/images/courses/the-law.jpg",
+    isBundle: false,
+    isFeatured: false
+  },
+  {
+    ontraportProductId: "493",
+    name: "Matt Lindland's Half Hook Series",
+    instructor: "Matt Lindland — Olympic Silver Medalist",
+    discipline: "mma",
+    videoCount: 8,
+    description: "Matt Lindland's specialty position — the half hook that gave him control over every opponent in the UFC.",
+    fullPrice: 47,
+    salePrice: 19,
+    image: "/images/courses/complete-mma-hero.jpg",
+    isBundle: false,
+    isFeatured: false
+  },
+  // ── Self-Defense ───────────────────────────────
+  {
+    ontraportProductId: "465",
+    name: "How To Win A Street Fight — Complete System",
+    instructor: 'Scott "Bam Bam" Sullivan, PhD',
+    discipline: "self-defense",
+    videoCount: 124,
+    description: "7 complete courses — how to win a fight, fight dirty, choke someone out, knock someone out, knife defense, self-defense shortcut, and combat blade.",
+    fullPrice: 299,
+    salePrice: 99,
+    image: "/images/courses/streetfight-bundle-hero.jpg",
+    isBundle: true,
+    isFeatured: false
+  }
+];
+function getProductById(id) {
+  return flashSaleProducts.find((p) => p.ontraportProductId === id);
+}
+
+const prerender = false;
+const stripe = new Stripe(undefined                                 );
+const POST = async ({ request }) => {
+  try {
+    const { email, firstName, lastName, productIds } = await request.json();
+    if (!email || !firstName || !lastName || !productIds?.length) {
+      return new Response(JSON.stringify({
+        error: "Missing required fields: email, firstName, lastName, productIds"
+      }), { status: 400, headers: { "Content-Type": "application/json" } });
+    }
+    const lineItems = [];
+    const validProductIds = [];
+    for (const id of productIds) {
+      const product = getProductById(id);
+      if (!product) continue;
+      lineItems.push({
+        price_data: {
+          currency: "usd",
+          product_data: {
+            name: product.name,
+            description: `${product.videoCount} videos — ${product.instructor}`,
+            images: [`https://fightscience.com${product.image}`]
+          },
+          unit_amount: product.salePrice * 100
+          // cents
+        },
+        quantity: 1
+      });
+      validProductIds.push(id);
+    }
+    if (!lineItems.length) {
+      return new Response(JSON.stringify({
+        error: "No valid products selected"
+      }), { status: 400, headers: { "Content-Type": "application/json" } });
+    }
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      customer_email: email,
+      line_items: lineItems,
+      metadata: {
+        firstName,
+        lastName,
+        email,
+        productIds: validProductIds.join(","),
+        source: "flash-sale"
+      },
+      success_url: "https://sale.fightscience.com/flash-sale-success?session_id={CHECKOUT_SESSION_ID}",
+      cancel_url: "https://sale.fightscience.com/"
+    });
+    return new Response(JSON.stringify({ url: session.url }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" }
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    return new Response(JSON.stringify({ error: message }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" }
+    });
+  }
+};
+
+const _page = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  POST,
+  prerender
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const page = () => _page;
+
+export { page };
