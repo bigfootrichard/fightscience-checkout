@@ -99,6 +99,13 @@ export const POST: APIRoute = async ({ request }) => {
       }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
 
+    // Calculate total for Meta pixel
+    const totalAmount = validProductIds.reduce((sum, id) => {
+      const p = getProductById(id);
+      return sum + (p ? p.salePrice : 0);
+    }, 0);
+    const numItems = validProductIds.length;
+
     // Capture contact in Ontraport for abandonment tracking (non-blocking)
     const productNames = validProductIds.map(id => getProductById(id)?.name || '').filter(Boolean);
     captureAbandonmentContact(email, firstName, lastName, productNames).catch(() => {});
@@ -115,7 +122,7 @@ export const POST: APIRoute = async ({ request }) => {
         productIds: validProductIds.join(','),
         source: 'flash-sale',
       },
-      success_url: 'https://sale.fightscience.com/flash-sale-success?session_id={CHECKOUT_SESSION_ID}',
+      success_url: `https://sale.fightscience.com/flash-sale-success?session_id={CHECKOUT_SESSION_ID}&total=${totalAmount}&items=${numItems}`,
       cancel_url: 'https://sale.fightscience.com/',
     });
 

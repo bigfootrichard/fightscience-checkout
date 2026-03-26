@@ -52,6 +52,38 @@ import SalesLayout from '../layouts/SalesLayout.astro';
   </section>
 </SalesLayout>
 
+<script>
+  // Parse purchase data from URL params
+  const params = new URLSearchParams(window.location.search);
+  const total = parseFloat(params.get('total') || '0');
+  const items = parseInt(params.get('items') || '0');
+  const sessionId = params.get('session_id') || '';
+
+  if (total > 0) {
+    // Push to GTM dataLayer (for Meta Pixel via GTM)
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: 'purchase',
+      ecommerce: {
+        transaction_id: sessionId,
+        value: total,
+        currency: 'USD',
+        items_count: items,
+      },
+    });
+
+    // Direct Meta Pixel call (fallback if pixel is loaded directly)
+    if (typeof fbq === 'function') {
+      fbq('track', 'Purchase', {
+        value: total,
+        currency: 'USD',
+        content_type: 'product',
+        num_items: items,
+      });
+    }
+  }
+</script>
+
 <style>
   .success-hero {
     background: var(--color-primary);
