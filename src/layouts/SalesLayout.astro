@@ -15,6 +15,10 @@ const { title, description } = Astro.props;
       <a href="https://fightscience.com/">
         <img src="/images/site/logo.png" alt="FightScience" class="header-logo" />
       </a>
+      <div class="header-contact">
+        <div>Email: <a href="mailto:support@fightscience.com">support@fightscience.com</a></div>
+        <div>Phone#: <a href="tel:18448288225">1-844-828-8225</a></div>
+      </div>
     </div>
   </header>
   <main class="sales-page">
@@ -34,18 +38,41 @@ const { title, description } = Astro.props;
 
 <style>
   .site-header {
-    background: var(--color-surface);
-    border-bottom: 4px solid var(--color-primary);
-    padding: var(--space-md) 0;
-    text-align: center;
+    background: #ffffff;
+    border-bottom: 2px solid #e8e8e8;
+    padding: 12px 0;
   }
   .header-inner {
     max-width: var(--max-width);
     margin: 0 auto;
     padding: 0 var(--gutter);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
   .header-logo {
-    height: 50px;
+    height: 72px;
+    width: auto;
+    display: block;
+  }
+  .header-contact {
+    text-align: right;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 700;
+    line-height: 1.7;
+    color: #111;
+  }
+  .header-contact a {
+    color: #111;
+    text-decoration: none;
+  }
+  .header-contact div:last-child a {
+    color: var(--color-accent-red);
+  }
+  @media (max-width: 640px) {
+    .header-logo { height: 52px; }
+    .header-contact { font-size: 0.75rem; }
   }
   .sales-page {
     background: var(--color-surface);
