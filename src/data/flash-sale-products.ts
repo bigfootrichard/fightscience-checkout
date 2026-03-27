@@ -270,7 +270,7 @@ export const flashSaleProducts: FlashSaleProduct[] = [
     name: 'Rock Solid Wrestling',
     instructor: 'Jon Trenge — 3x NCAA All-American',
     discipline: 'wrestling',
-    videoCount: 33,
+    videoCount: 15,
     description: 'Build a bulletproof wrestling base — stance, motion, level changes, and the fundamental building blocks of championship wrestling.',
     fullPrice: 97,
     salePrice: 27,
