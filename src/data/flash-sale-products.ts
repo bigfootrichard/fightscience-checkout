@@ -333,6 +333,19 @@ export const flashSaleProducts: FlashSaleProduct[] = [
 
   // ── MMA ────────────────────────────────────────
   {
+    ontraportProductId: '504',
+    name: "Perez's Striker's Bible",
+    instructor: 'Kru Robert Perez',
+    discipline: 'mma',
+    videoCount: 133,
+    description: '8 complete striking programs — counter striking, advanced striking, deceptive striking, MMA clinch, clinch drills, dominate with kicks, kick countering, and MMA pad training.',
+    fullPrice: 199,
+    salePrice: 77,
+    image: '/images/courses/strikers-bible.jpg',
+    isBundle: true,
+    isFeatured: true,
+  },
+  {
     ontraportProductId: '490',
     name: 'Ground & Pound Bible',
     instructor: 'Kru Robert Perez',
