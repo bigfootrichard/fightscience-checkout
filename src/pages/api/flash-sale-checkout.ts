@@ -120,7 +120,7 @@ export const POST: APIRoute = async ({ request }) => {
         lastName,
         email,
         productIds: validProductIds.join(','),
-        source: 'flash-sale',
+        source: 'checkout',
       },
       success_url: `https://sale.fightscience.com/flash-sale-success?session_id={CHECKOUT_SESSION_ID}&total=${totalAmount}&items=${numItems}`,
       cancel_url: 'https://sale.fightscience.com/',

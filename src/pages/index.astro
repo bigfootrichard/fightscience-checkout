@@ -5,35 +5,23 @@ import { flashSaleProducts, disciplineInfo } from '../data/flash-sale-products';
 const disciplines = ['bjj', 'muay-thai', 'wrestling', 'mma', 'self-defense'] as const;
 ---
 
-<SalesLayout title="FightScience Relaunch Flash Sale — Lowest Prices Ever" description="FightScience is back. To celebrate our relaunch, we're putting our entire product line on sale — 25+ programs in BJJ, Muay Thai, Wrestling, MMA, and Self-Defense at the lowest prices we've ever offered.">
+<SalesLayout title="FightScience — World-Class Martial Arts Training" description="25+ programs in BJJ, Muay Thai, Wrestling, MMA, and Self-Defense from world-class instructors. Pick what you want, pay once, train forever.">
 
   <!-- Hero -->
   <section class="sale-hero">
     <div class="container">
-      <p class="sale-label">Relaunch Celebration</p>
-      <h1>Relaunch Flash Sale</h1>
-      <p class="sale-sub">FightScience is back — and we're celebrating with our <strong>biggest sale ever.</strong></p>
-      <p class="sale-context">Our entire product line. 25+ programs across BJJ, Muay Thai, Wrestling, MMA, and Self-Defense. World-class instructors. Starting at $17. Pick what you want, pay once, train forever.</p>
-      <div class="sale-countdown" id="sale-countdown">
-        <p class="countdown-label">Sale ends Friday, April 3rd at 4pm ET</p>
-        <div class="countdown-timer">
-          <div class="countdown-unit"><span id="cd-days">--</span><span class="countdown-unit-label">Days</span></div>
-          <div class="countdown-sep">:</div>
-          <div class="countdown-unit"><span id="cd-hours">--</span><span class="countdown-unit-label">Hours</span></div>
-          <div class="countdown-sep">:</div>
-          <div class="countdown-unit"><span id="cd-mins">--</span><span class="countdown-unit-label">Mins</span></div>
-          <div class="countdown-sep">:</div>
-          <div class="countdown-unit"><span id="cd-secs">--</span><span class="countdown-unit-label">Secs</span></div>
-        </div>
-      </div>
+      <p class="sale-label">FightScience</p>
+      <h1>World-Class Martial Arts Training</h1>
+      <p class="sale-sub">25+ programs from <strong>world-class instructors.</strong></p>
+      <p class="sale-context">BJJ, Muay Thai, Wrestling, MMA, and Self-Defense. Pick what you want, pay once, train forever.</p>
       <div class="sale-stats">
         <div class="sale-stat">
           <span class="sale-stat-num">25+</span>
           <span class="sale-stat-label">Programs</span>
         </div>
         <div class="sale-stat">
-          <span class="sale-stat-num">75%</span>
-          <span class="sale-stat-label">Off Select Courses</span>
+          <span class="sale-stat-num">1,400+</span>
+          <span class="sale-stat-label">Videos</span>
         </div>
         <div class="sale-stat">
           <span class="sale-stat-num">60-Day</span>
@@ -75,8 +63,7 @@ const disciplines = ['bjj', 'muay-thai', 'wrestling', 'mma', 'self-defense'] as 
                   <h3>{product.name}</h3>
                   <p class="sale-desc">{product.description}</p>
                   <div class="sale-pricing">
-                    <span class="price-old">${product.fullPrice}</span>
-                    <span class="price-sale">${product.salePrice}</span>
+                    <span class="price-current">${product.salePrice}</span>
                   </div>
                   <label class="add-checkbox">
                     <input type="checkbox" class="course-checkbox" data-id={product.ontraportProductId} data-price={product.salePrice} data-name={product.name} />
@@ -147,30 +134,6 @@ const disciplines = ['bjj', 'muay-thai', 'wrestling', 'mma', 'self-defense'] as 
 </SalesLayout>
 
 <script>
-  // ── Countdown Timer (April 3 2026 4pm EDT = 20:00 UTC) ──────────────────────
-  const deadline = new Date('2026-04-03T20:00:00Z');
-  function updateCountdown() {
-    const now = new Date();
-    const diff = deadline.getTime() - now.getTime();
-    const el = document.getElementById('sale-countdown');
-    if (!el) return;
-    if (diff <= 0) {
-      el.innerHTML = '<p class="countdown-label">This sale has ended.</p>';
-      return;
-    }
-    const days  = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const mins  = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const secs  = Math.floor((diff % (1000 * 60)) / 1000);
-    const pad = (n: number) => String(n).padStart(2, '0');
-    (document.getElementById('cd-days')  as HTMLElement).textContent = pad(days);
-    (document.getElementById('cd-hours') as HTMLElement).textContent = pad(hours);
-    (document.getElementById('cd-mins')  as HTMLElement).textContent = pad(mins);
-    (document.getElementById('cd-secs')  as HTMLElement).textContent = pad(secs);
-  }
-  updateCountdown();
-  setInterval(updateCountdown, 1000);
-
   const checkboxes = document.querySelectorAll<HTMLInputElement>('.course-checkbox');
   const stickyCart = document.getElementById('sticky-cart')!;
   const cartCount = document.getElementById('cart-count')!;
@@ -310,54 +273,6 @@ const disciplines = ['bjj', 'muay-thai', 'wrestling', 'mma', 'self-defense'] as 
     margin: 0 auto var(--space-xl);
     line-height: 1.6;
   }
-  /* ── Countdown ──────────────────────────────── */
-  .sale-countdown {
-    margin: 0 auto var(--space-xl);
-  }
-  .countdown-label {
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--color-accent-red);
-    margin-bottom: var(--space-sm);
-  }
-  .countdown-timer {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-sm);
-    border: 2px solid rgba(255,255,255,0.12);
-    padding: var(--space-md) var(--space-xl);
-    background: rgba(255,255,255,0.04);
-  }
-  .countdown-unit {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-width: 52px;
-  }
-  .countdown-unit span:first-child {
-    font-family: var(--font-heading);
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--color-highlight);
-    line-height: 1;
-  }
-  .countdown-unit-label {
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: #666;
-    margin-top: 4px;
-  }
-  .countdown-sep {
-    font-family: var(--font-heading);
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #444;
-    margin-bottom: 12px;
-  }
   .sale-stats {
     display: flex;
     justify-content: center;
@@ -461,8 +376,7 @@ const disciplines = ['bjj', 'muay-thai', 'wrestling', 'mma', 'self-defense'] as 
   .sale-card h3 { font-family: var(--font-heading); font-size: 1.35rem; font-weight: 700; color: #000; line-height: 1.2; margin-bottom: var(--space-sm); }
   .sale-desc { font-size: 0.9rem; line-height: 1.5; color: #444; margin-bottom: var(--space-md); flex-grow: 1; }
   .sale-pricing { display: flex; align-items: baseline; gap: var(--space-md); margin-bottom: var(--space-md); }
-  .price-old { font-family: var(--font-mono); font-size: 1rem; font-weight: 700; color: var(--color-muted); text-decoration: line-through; }
-  .price-sale { font-family: var(--font-heading); font-size: 2rem; font-weight: 700; color: var(--color-accent-red); }
+  .price-current { font-family: var(--font-heading); font-size: 2rem; font-weight: 700; color: var(--color-primary); }
 
   /* ── Checkbox ───────────────────────────────── */
   .add-checkbox {
@@ -640,9 +554,6 @@ const disciplines = ['bjj', 'muay-thai', 'wrestling', 'mma', 'self-defense'] as 
   }
   @media (max-width: 768px) {
     .sale-hero h1 { font-size: 2.25rem; }
-    .countdown-timer { gap: var(--space-xs); padding: var(--space-sm) var(--space-lg); }
-    .countdown-unit { min-width: 42px; }
-    .countdown-unit span:first-child { font-size: 1.5rem; }
     .sale-grid { grid-template-columns: 1fr; }
     .sale-card.bundle-card { grid-column: span 1; }
     .sale-stats { gap: var(--space-xl); }
