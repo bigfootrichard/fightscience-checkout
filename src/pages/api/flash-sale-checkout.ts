@@ -5,8 +5,8 @@ import Stripe from 'stripe';
 import { getProductById } from '../../data/flash-sale-products';
 
 const stripe = new Stripe(import.meta.env.STRIPE_SECRET_KEY);
-const ONTRAPORT_API_KEY = import.meta.env.ONTRAPORT_API_KEY || 'TEb2KY9mn3y0BC5';
-const ONTRAPORT_APP_ID = import.meta.env.ONTRAPORT_APP_ID || '2_188475_25BL5Wepb';
+const ONTRAPORT_API_KEY = import.meta.env.ONTRAPORT_API_KEY;
+const ONTRAPORT_APP_ID = import.meta.env.ONTRAPORT_APP_ID;
 const FLASH_SALE_STARTED_TAG = 'Flash Sale Started';
 
 async function ontraportRequest(method: string, endpoint: string, body?: Record<string, unknown>) {

@@ -5,9 +5,9 @@ import Stripe from 'stripe';
 
 const stripe = new Stripe(import.meta.env.STRIPE_SECRET_KEY);
 const STRIPE_WEBHOOK_SECRET = import.meta.env.STRIPE_WEBHOOK_SECRET;
-const ONTRAPORT_WEBHOOK_SECRET = import.meta.env.ONTRAPORT_WEBHOOK_SECRET || 'yPp!MxFhN33@JyDrNANSM9MpehG8N';
-const ONTRAPORT_API_KEY = import.meta.env.ONTRAPORT_API_KEY || 'TEb2KY9mn3y0BC5';
-const ONTRAPORT_APP_ID = import.meta.env.ONTRAPORT_APP_ID || '2_188475_25BL5Wepb';
+const ONTRAPORT_WEBHOOK_SECRET = import.meta.env.ONTRAPORT_WEBHOOK_SECRET;
+const ONTRAPORT_API_KEY = import.meta.env.ONTRAPORT_API_KEY;
+const ONTRAPORT_APP_ID = import.meta.env.ONTRAPORT_APP_ID;
 const MEMBERS_WEBHOOK_URL = 'https://fightscience.tv/api/webhook/ontraport';
 // Delivery emails handled by individual product automations in Ontraport
 const ADMIN_EMAIL = 'support@fightinstrong.org';
